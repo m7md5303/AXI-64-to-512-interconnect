@@ -1,6 +1,9 @@
 # AXI-64-to-512-interconnect
 Open-source AXI interconnect between 64-bit Master and 512-bit Slave supporting up to 2GB memory space for fixed-ID transactions implemented in Verilog. 
 
+<img width="480" height="300" alt="image" src="https://github.com/user-attachments/assets/75009dfc-75cf-4fca-8768-2667e3cb9bc1" />
+
+
 ## Repository Structure
 
 ### Design files
