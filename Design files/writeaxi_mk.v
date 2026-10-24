@@ -63,41 +63,41 @@ module writeaxi_mk (
   localparam INCR=2'b01;
 
 //declaring ports
-  input wire aclk, aresetn;
+  input aclk, aresetn;
 
 //declaring AXI Slave ports
-    input wire [ADDR_WIDTH-1:0] S_AXI_awaddr;
-    input wire [1:0] S_AXI_awburst;
-    input wire [7:0] S_AXI_awlen;
-    output wire S_AXI_awready;
-    input wire [2:0] S_AXI_awsize;
-    input wire S_AXI_awvalid;
-    input wire S_AXI_bready;
-    output wire [1:0] S_AXI_bresp;
-    output wire S_AXI_bvalid;
-    input wire [SLAVE_WIDTH-1:0] S_AXI_wdata;
-    input wire S_AXI_wlast;
-    output wire S_AXI_wready;
-    input wire [STRB_S-1:0] S_AXI_wstrb;
-    input wire S_AXI_wvalid;
+    input [ADDR_WIDTH-1:0] S_AXI_awaddr;
+    input [1:0] S_AXI_awburst;
+    input [7:0] S_AXI_awlen;
+    output S_AXI_awready;
+    input [2:0] S_AXI_awsize;
+    input S_AXI_awvalid;
+    input S_AXI_bready;
+    output [1:0] S_AXI_bresp;
+    output S_AXI_bvalid;
+    input [SLAVE_WIDTH-1:0] S_AXI_wdata;
+    input S_AXI_wlast;
+    output S_AXI_wready;
+    input [STRB_S-1:0] S_AXI_wstrb;
+    input S_AXI_wvalid;
 
 
 
 //declaring AXI Master ports
-    output wire [ADDR_WIDTH-1:0] M_AXI_awaddr;
-    output wire [1:0] M_AXI_awburst;
-    output wire [7:0] M_AXI_awlen;
-    input wire M_AXI_awready;
-    output wire [2:0] M_AXI_awsize;
-    output wire M_AXI_awvalid;
-    output wire M_AXI_bready;
-    input wire [1:0] M_AXI_bresp;
-    input wire M_AXI_bvalid;
-    output wire [MASTER_WIDTH-1:0] M_AXI_wdata;
-    output wire M_AXI_wlast;
-    input wire M_AXI_wready;
-    output wire [STRB_M-1:0] M_AXI_wstrb;
-    output wire M_AXI_wvalid;
+    output [ADDR_WIDTH-1:0] M_AXI_awaddr;
+    output [1:0] M_AXI_awburst;
+    output [7:0] M_AXI_awlen;
+    input M_AXI_awready;
+    output [2:0] M_AXI_awsize;
+    output M_AXI_awvalid;
+    output M_AXI_bready;
+    input [1:0] M_AXI_bresp;
+    input M_AXI_bvalid;
+    output [MASTER_WIDTH-1:0] M_AXI_wdata;
+    output M_AXI_wlast;
+    input M_AXI_wready;
+    output [STRB_M-1:0] M_AXI_wstrb;
+    output M_AXI_wvalid;
 
 //placeholders
     reg S_AXI_awready_reg;
@@ -248,10 +248,12 @@ module writeaxi_mk (
                                 received_beats<=received_beats+1'b1;
                                 received_word_idx<=received_word_idx+1'b1;
                                 if((received_word_idx+cpu_orig_address[5:3])==3'b111) begin
-                                    for (i=0; i<cpu_orig_address[5:3]; i=i+1) begin
-                                        write_lane_strobe[i]<=1'b0;
-                                        written_subword[i]<=64'b0;
-                                        word_substrb[i]<=8'b0;
+                                    for (i=0; i<4'd8; i=i+1) begin
+                                        if(i<cpu_orig_address[5:3]) begin
+                                            write_lane_strobe[i]<=1'b0;
+                                            written_subword[i]<=64'b0;
+                                            word_substrb[i]<=8'b0; 
+                                        end
                                     end
                                     finished_word<=1'b1;
                                     fifos_wen<=1'b1;
@@ -541,7 +543,7 @@ module writeaxi_mk (
     end
 
     always @(*) begin
-        M_AXI_wdata_reg<=out_data_fifo;   
+        M_AXI_wdata_reg=out_data_fifo;   
     end
     always @(*) begin
         for (i=0; i<8; i=i+1) begin
@@ -651,9 +653,9 @@ module writeaxi_mk (
     end
   //translating awlen
   function automatic [7:0] calc_len;
-    input wire [7:0] orig_len_f;
-    input wire [1:0] burst_type_f;
-    input wire [30:0] araddr_in_f;
+    input [7:0] orig_len_f;
+    input [1:0] burst_type_f;
+    input [30:0] araddr_in_f;
     reg [7:0] new_len;
     reg [8:0] total_len;
     begin
