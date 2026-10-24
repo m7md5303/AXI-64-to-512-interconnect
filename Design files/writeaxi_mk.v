@@ -326,10 +326,12 @@ module writeaxi_mk (
                             received_word_idx<=received_word_idx+1'b1;
                             if((received_word_idx+cpu_orig_address[5:3])==3'b111) begin
                                 received_word_idx<=3'b0;
-                                for (i=0; i<cpu_orig_address[5:3]; i=i+1) begin
-                                    write_lane_strobe[i]<=1'b0;
-                                    written_subword[i]<=64'b0;
-                                    word_substrb[i]<=8'b0;
+                                for (i=0; i<4'd8; i=i+1) begin
+                                    if(i< cpu_orig_address[5:3]) begin
+                                        write_lane_strobe[i]<=1'b0;
+                                        written_subword[i]<=64'b0;
+                                        word_substrb[i]<=8'b0; 
+                                    end
                                 end
                                 finished_word<=1'b1;
                                 fifos_wen<=1'b1;
